@@ -1,12 +1,10 @@
-import './App.css'
-
 function App() {
 
   return (
     <>
-      transcript app
+      lol
     </>
   )
 }
 
-export default App
+export default App;
