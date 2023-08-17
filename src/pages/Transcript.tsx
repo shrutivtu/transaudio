@@ -17,6 +17,7 @@ export const Transcript = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const wordsRef = useRef<HTMLSelectElement | null>(null);
   const prevNode = useRef<any>(null);
+  const timeRef = useRef<any>(null);
 
   async function fetchData() {
     const data = await fetchTranscriptData(transcriptId);
@@ -39,6 +40,12 @@ export const Transcript = () => {
     if(prevNode.current){
       prevNode.current.classList.remove('active-word');
     }
+    if(timeRef && timeRef.current !== null && audioRef.current && audioRef.current.currentTime - timeRef.current >= 2){
+      audioRef.current.currentTime = transcriptData.blocks[activeWordIndex-1].start;
+    }
+    if(audioRef.current){
+      timeRef.current = audioRef.current.currentTime;
+    }
     const wordElement:any = wordsRef && wordsRef.current && wordsRef.current.childNodes[activeWordIndex-1];
     if(wordElement){
       wordElement.classList.add('active-word');
@@ -52,7 +59,7 @@ export const Transcript = () => {
     }
   }
 
-  const handleSelected = (e: any) => {
+  const handleSelected = (e: any):void => {
     let id: any = e.target.id.split("-")[1];
     id = parseInt(id);
     const nodeObj: any = transcriptData.blocks[id];
@@ -82,8 +89,8 @@ export const Transcript = () => {
       </section>
       <section className="transcript-audio_container">
         {/* Todo later */}
-        {/* <AudioPlayer audioUrl={transcriptData.audioUrl} playerRef={audioRef} /> */}
-        <audio controls src={transcriptData.audioUrl} ref={audioRef} onTimeUpdate={handleTimeUpdate}></audio>
+        {/* <AudioPlayer audioUrl={transcriptData.audioUrl} audioRef={audioRef} /> */}
+        <audio controls src={transcriptData.audioUrl} ref={audioRef} onTimeUpdate={handleTimeUpdate} style={{ width: '100%' }}></audio>
       </section>
     </main>
   );
