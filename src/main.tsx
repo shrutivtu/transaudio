@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import App from './App.tsx'
 import './styles/main.scss';
-import Transcript from './pages/Transcript.tsx';
+import { Transcript } from './pages/Transcript.tsx';
 
 const router = createBrowserRouter([
   {
