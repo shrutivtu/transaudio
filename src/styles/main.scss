@@ -2,3 +2,24 @@
     margin:0;
     padding:0;
 }
+
+.transcript-root{
+    padding: 2rem 4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .transcript-title{
+        width: 50%;
+        display: flex;
+        margin-bottom: 1rem;
+    }
+    .transcript-blocks{
+        font-size: 16px;
+
+        p{
+            margin-bottom: 1rem;
+        }
+    }
+}
