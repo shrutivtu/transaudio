@@ -10,6 +10,10 @@
     justify-content: center;
     align-items: center;
 
+    .transcript-text_container{
+        margin-bottom: 3.125rem;
+    }
+
     .transcript-title{
         width: 50%;
         display: flex;
@@ -22,4 +26,21 @@
             margin-bottom: 1rem;
         }
     }
+
+    .transcript-audio_container{
+        position: fixed;
+        bottom: 0;
+        left: 0; 
+        width: 100%;
+        background-color: #f0f0f0; 
+        padding: 10px;
+        margin-top: 20px;
+        // audio{
+            
+        // }
+    }
+}
+
+.active-word{
+    background-color: bisque;
 }

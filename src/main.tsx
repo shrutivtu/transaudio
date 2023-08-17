@@ -7,16 +7,25 @@ import {
 import App from './App.tsx'
 import './styles/main.scss';
 import { Transcript } from './pages/Transcript.tsx';
+import { ErrorPage } from './components/ErrorComp.tsx';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />
+    element: <App />,
+    errorElement: <ErrorPage />
+    // children: [
+    //   {
+    //     path: "transcripts/:transcriptId",
+    //     element: <Transcript />,
+    //   },
+    // ],
   },
   {
     path: "transcripts/:transcriptId",
-    element: <Transcript />
-  }
+    element: <Transcript />,
+    errorElement: <ErrorPage />
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

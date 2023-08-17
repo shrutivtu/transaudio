@@ -1,3 +1,4 @@
+import { RefObject } from 'react';
 export interface TranscriptBlockType {
     end: number;
     speaker: string;
@@ -10,4 +11,9 @@ export interface TranscriptType {
     title: string;
     audioUrl: string;
     blocks: TranscriptBlockType[];
+}
+
+export interface AudioPlayerProps {
+    audioUrl: string;
+    playerRef: RefObject<HTMLAudioElement>; // Correct type for playerRef
 }
