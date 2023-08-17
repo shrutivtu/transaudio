@@ -1,6 +1,8 @@
-export const TranscriptBlock = ({ transcript } : { transcript:any}) => {
+import { TranscriptType, TranscriptBlockType } from "../types";
+
+export const TranscriptBlock = ({ transcript } : { transcript: TranscriptType }) => {
     return(<section>
-        {transcript.blocks.map((item: any, index: number) => {
+        {transcript && transcript.blocks.map((item: TranscriptBlockType, index: number) => {
           return (
             <p
               key={index}
