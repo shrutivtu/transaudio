@@ -12,11 +12,11 @@ export const Transcript = () => {
     audioUrl: "",
     blocks: [],
   });
+  const [current, setCurrent] = useState<any>(null);
 
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const wordsRef = useRef<HTMLSelectElement>(null);
-
-  let prev:any = null;
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const wordsRef = useRef<HTMLSelectElement | null>(null);
+  const prevNode = useRef<any>(null);
 
   async function fetchData() {
     const data = await fetchTranscriptData(transcriptId);
@@ -36,13 +36,13 @@ export const Transcript = () => {
 
   const onTimeUpdate = () => {
     const activeWordIndex = getActiveWordIndex()
-    if(prev){
-      prev.classList.remove('active-word');
+    if(prevNode.current){
+      prevNode.current.classList.remove('active-word');
     }
     const wordElement:any = wordsRef && wordsRef.current && wordsRef.current.childNodes[activeWordIndex-1];
     if(wordElement){
       wordElement.classList.add('active-word');
-      prev = wordElement;
+      prevNode.current = wordElement;
     }
   };
 
@@ -52,6 +52,25 @@ export const Transcript = () => {
     }
   }
 
+  const handleSelected = (e: any) => {
+    let id: any = e.target.id.split("-")[1];
+    id = parseInt(id);
+    const nodeObj: any = transcriptData.blocks[id];
+    const activeWordIndex = getActiveWordIndex();
+  
+    if (wordsRef.current) {
+      const prevNodes:any= wordsRef.current.childNodes[activeWordIndex];
+      prevNodes.classList.remove("active-word");
+    }
+    if (nodeObj !== current || current === null) {
+      if (activeWordIndex > -1) setCurrent(nodeObj);
+      if(audioRef.current){
+        audioRef.current.currentTime = nodeObj.start;
+        audioRef.current.play();
+      }
+    }
+  };
+
   return (
     <main className="transcript-root">
       <section className="transcript-text_container">
@@ -59,7 +78,7 @@ export const Transcript = () => {
           <h2>{transcriptData.title}</h2>
         </div>
         {/* transcript text section */}
-        <TranscriptBlock transcript={transcriptData} wordsRef={wordsRef} />
+        <TranscriptBlock transcript={transcriptData} wordsRef={wordsRef} handleMouseUp={handleSelected} />
       </section>
       <section className="transcript-audio_container">
         {/* Todo later */}

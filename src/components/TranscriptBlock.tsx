@@ -3,13 +3,15 @@ import { TranscriptType, TranscriptBlockType } from "../types";
 
 export const TranscriptBlock = ({
   transcript,
-  wordsRef
+  wordsRef,
+  handleMouseUp
 }: {
   transcript: TranscriptType;
   wordsRef: RefObject<HTMLSelectElement>
+  handleMouseUp: (e:any) => {}
 }) => {
   return (
-    <section className="transcript-blocks" ref={wordsRef}>
+    <section className="transcript-blocks" ref={wordsRef} onMouseUp={handleMouseUp}>
       {transcript &&
         transcript.blocks.map((item: TranscriptBlockType, index: number) => {
           return (
