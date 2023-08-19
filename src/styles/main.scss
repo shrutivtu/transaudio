@@ -27,11 +27,9 @@
             width: 40%;
             margin: 0 auto;
             height: 20rem;
-            // border: 1px solid grey;
             list-style-type: none;
             overflow-y: scroll;
             box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-            // padding-top: 1rem;
             display: flex;
             flex-direction: column;
             justify-content: space-evenly;
@@ -44,7 +42,6 @@
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                // margin-top: 1rem;
                 @include font($primaryFont, 18px, 900);
 
                 a{

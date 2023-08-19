@@ -1,13 +1,15 @@
 import { Link } from "react-router-dom";
-import transcriptsId from "./constants/transcriptIds";
+import { TRANSCRIPT_IDS } from "./constants/app.constant";
+import { transcriptProp } from "./types";
+
 
 function App() {
   return (
     <div className="app-container">
       <section>
         <ul>
-          {transcriptsId.map((transcript: any) => {
-            return <li><Link to={`transcripts/${transcript.tId}`}>{transcript.name}</Link></li>
+          {TRANSCRIPT_IDS.map((transcript: transcriptProp) => {
+            return <li><Link to={`transcripts/${transcript.TID}`}>{transcript.NAME}</Link></li>
           })}
         </ul>
       </section>     

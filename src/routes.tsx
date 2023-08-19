@@ -1,14 +1,19 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, useRouteError } from 'react-router-dom';
 import App from './App';
-import { ErrorPage } from './components';
 import { Transcript } from './pages';
 import QueryWrapper from './QueryWrapper';
+import { ErrorComp } from './components';
+
+const Error = () => {
+  const error:any = useRouteError();
+  return <ErrorComp text={error.message} />
+}
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
-    errorElement: <ErrorPage />,
+    errorElement: <Error />,
   },
   {
     path: 'transcripts/:transcriptId',
@@ -17,7 +22,7 @@ const router = createBrowserRouter([
         <Transcript />
       </QueryWrapper>
     ),
-    errorElement: <ErrorPage />,
+    errorElement: <Error />
   },
 ]);
 

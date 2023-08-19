@@ -15,7 +15,7 @@ export interface TranscriptType {
 
 export interface TranscriptBlockProp {
     transcript: TranscriptType,
-    wordsRef: RefObject<HTMLSelectElement>,
+    containerRef: RefObject<HTMLSelectElement>,
     handleMouseUp: (e: any) => void
 }
 
@@ -23,6 +23,8 @@ export interface AudioPlayerProps {
     audioUrl: string;
     audioRef: RefObject<HTMLAudioElement>;
     callTimeUpdate: () => void;
+    isBuffering?: (seeking: boolean) => void;
+    onSeek?: () => void;
 }
 
 export interface LoaderProps {
@@ -30,3 +32,8 @@ export interface LoaderProps {
     color: string;
     overrideProp: object
 };
+
+export interface transcriptProp{
+    NAME: string;
+    TID: string;
+}
