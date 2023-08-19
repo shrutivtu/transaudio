@@ -4,14 +4,18 @@
 }
 
 .transcript-root{
-    padding: 2rem 4rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 
     .transcript-text_container{
+        box-sizing: border-box;
+        height: 90%;
+        padding: 2rem 4rem;
         margin-bottom: 3.125rem;
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        overflow-y: auto;
     }
 
     .transcript-title{
@@ -21,7 +25,6 @@
     }
     .transcript-blocks{
         font-size: 16px;
-
         p{
             margin-bottom: 1rem;
         }
@@ -32,12 +35,19 @@
         bottom: 0;
         left: 0; 
         width: 100%;
-        background-color: #f0f0f0; 
-        padding: 10px;
+        height:10%;
+        box-sizing: border-box;
+        background-color: #F0F0F0; 
+        padding: 10px 15px;
         margin-top: 20px;
-        // audio{
-            
-        // }
+
+        audio{
+            width: 100%;
+            margin: 0 auto;
+            background-color: #F2F3F4;
+            border-radius: 30px;
+            box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        }
     }
 }
 

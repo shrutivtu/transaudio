@@ -15,5 +15,6 @@ export interface TranscriptType {
 
 export interface AudioPlayerProps {
     audioUrl: string;
-    playerRef: RefObject<HTMLAudioElement>; // Correct type for playerRef
+    audioRef: RefObject<HTMLAudioElement>;
+    callTimeUpdate: () => void;
 }

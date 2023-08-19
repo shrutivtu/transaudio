@@ -16,7 +16,7 @@ export const Transcript = () => {
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const wordsRef = useRef<HTMLSelectElement | null>(null);
-  const prevNode = useRef<any>(null);
+  const prevNode = useRef<HTMLElement | null>(null);
   const timeRef = useRef<any>(null);
 
   async function fetchData() {
@@ -88,9 +88,7 @@ export const Transcript = () => {
         <TranscriptBlock transcript={transcriptData} wordsRef={wordsRef} handleMouseUp={handleSelected} />
       </section>
       <section className="transcript-audio_container">
-        {/* Todo later */}
-        {/* <AudioPlayer audioUrl={transcriptData.audioUrl} audioRef={audioRef} /> */}
-        <audio controls src={transcriptData.audioUrl} ref={audioRef} onTimeUpdate={handleTimeUpdate} style={{ width: '100%' }}></audio>
+        <AudioPlayer audioUrl={transcriptData.audioUrl} audioRef={audioRef} callTimeUpdate={handleTimeUpdate} />
       </section>
     </main>
   );
