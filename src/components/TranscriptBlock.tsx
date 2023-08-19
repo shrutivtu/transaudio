@@ -1,14 +1,9 @@
-import { RefObject } from "react";
-import { TranscriptType, TranscriptBlockType } from "../types";
+import { TranscriptBlockType, TranscriptBlockProp } from "../types";
 
-export const TranscriptBlock = ({
+export const TranscriptBlock:React.FC<TranscriptBlockProp> = ({
   transcript,
   wordsRef,
   handleMouseUp
-}: {
-  transcript: TranscriptType,
-  wordsRef: RefObject<HTMLSelectElement>,
-  handleMouseUp: (e: any) => void
 }) => {
   return (
     <section className="transcript-blocks" ref={wordsRef} onMouseUp={handleMouseUp}>
