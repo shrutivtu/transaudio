@@ -1,17 +1,12 @@
-import { useEffect, useState, useRef } from "react";
+import { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { fetchTranscriptData } from "../services/transcriptApi";
 import { TranscriptBlock, AudioPlayer } from "../components";
-import { TranscriptType } from "../types";
+import { TranscriptBlockType } from "../types";
 
 export const Transcript = () => {
   const { transcriptId } = useParams();
-  const [ transcriptData, setTranscriptData ] = useState<TranscriptType>({
-    id: "",
-    title: "",
-    audioUrl: "",
-    blocks: [],
-  });
   const [current, setCurrent] = useState<any>(null);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -19,16 +14,13 @@ export const Transcript = () => {
   const prevNode = useRef<HTMLElement | null>(null);
   const timeRef = useRef<any>(null);
 
-  async function fetchData() {
-    const data = await fetchTranscriptData(transcriptId);
-    setTranscriptData(data);
-  }
-  useEffect(() => {
-    fetchData();
-  }, [transcriptId]);
+  const { isLoading, error, data } = useQuery({
+    queryKey: ['transcriptData'],
+    queryFn: () => fetchTranscriptData(transcriptId)
+  })
 
   const getActiveWordIndex = () => {
-    return transcriptData.blocks.findIndex((word) => {
+    return data.blocks.findIndex((word: TranscriptBlockType) => {
       if(audioRef && audioRef.current){
         return word.start > audioRef.current.currentTime;
       }
@@ -41,7 +33,7 @@ export const Transcript = () => {
       prevNode.current.classList.remove('active-word');
     }
     if(timeRef && timeRef.current !== null && audioRef.current && audioRef.current.currentTime - timeRef.current >= 2){
-      audioRef.current.currentTime = transcriptData.blocks[activeWordIndex-1].start;
+      audioRef.current.currentTime = data.blocks[activeWordIndex-1].start;
     }
     if(audioRef.current){
       timeRef.current = audioRef.current.currentTime;
@@ -62,7 +54,7 @@ export const Transcript = () => {
   const handleSelected = (e: any):void => {
     let id: any = e.target.id.split("-")[1];
     id = parseInt(id);
-    const nodeObj: any = transcriptData.blocks[id];
+    const nodeObj: any = data.blocks[id];
     const activeWordIndex = getActiveWordIndex();
   
     if (wordsRef.current) {
@@ -78,17 +70,23 @@ export const Transcript = () => {
     }
   };
 
+  if(isLoading){
+    return 'Loading...'
+  }
+
+  if (error instanceof Error) return 'An error has occurred: ' + error.message
+
   return (
     <main className="transcript-root">
       <section className="transcript-text_container">
         <div className="transcript-title">
-          <h2>{transcriptData.title}</h2>
+          <h2>{data.title}</h2>
         </div>
         {/* transcript text section */}
-        <TranscriptBlock transcript={transcriptData} wordsRef={wordsRef} handleMouseUp={handleSelected} />
+        <TranscriptBlock transcript={data} wordsRef={wordsRef} handleMouseUp={handleSelected} />
       </section>
       <section className="transcript-audio_container">
-        <AudioPlayer audioUrl={transcriptData.audioUrl} audioRef={audioRef} callTimeUpdate={handleTimeUpdate} />
+        <AudioPlayer audioUrl={data.audioUrl} audioRef={audioRef} callTimeUpdate={handleTimeUpdate} />
       </section>
     </main>
   );
