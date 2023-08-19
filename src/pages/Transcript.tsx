@@ -1,86 +1,115 @@
-import { useState, useRef, CSSProperties } from "react";
+import { useState, useRef, CSSProperties, useEffect, MouseEvent, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTranscriptData } from "../services/transcriptApi";
-import { TranscriptBlock, AudioPlayer, Loader } from "../components";
+import { TranscriptBlock, AudioPlayer, PageLoader, BufferLoader } from "../components";
+import { debounce } from "../utils";
 import { TranscriptBlockType } from "../types";
+import { ACTIVE_WORD } from "../constants/app.constant";
+
+
+function findBlockIndex(blocks: TranscriptBlockType[], startTime: number): number {
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i];
+    if (startTime >= block.start && startTime < block.end) {
+      return i;
+    }
+  }
+  return -1; // Return -1 if no matching block is found
+}
+
+const overrideProp: CSSProperties = {
+  position: "fixed",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  display: "block",
+  margin: "0 auto",
+  borderColor: "red"
+}
+
+const bufferingStyle: CSSProperties = {
+  position: "fixed",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  display: "block",
+  margin: "0 auto",
+}
+
+
+
+const highlightBlock = (newBlock: HTMLParagraphElement, oldBlock?: HTMLParagraphElement) => {
+  if(oldBlock === newBlock || newBlock.classList.contains(ACTIVE_WORD)) return;
+  oldBlock?.classList.remove(ACTIVE_WORD);
+  newBlock.classList.add(ACTIVE_WORD);
+}
 
 export const Transcript = () => {
-  const { transcriptId } = useParams();
-  const [current, setCurrent] = useState<any>(null);
-
+  const { transcriptId } = useParams<{ transcriptId?: string }>() || {};
+  const [currentBlock, setCurrentBlock] = useState(0);
+  const [paragraphs, setParagraphs] = useState<HTMLParagraphElement[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const wordsRef = useRef<HTMLSelectElement | null>(null);
-  const prevNode = useRef<HTMLElement | null>(null);
-  const timeRef = useRef<any>(null);
+  const containerRef = useRef<HTMLSelectElement | null>(null);
+  const [ buffering, setBuffering ] = useState(true);
+  const highlightBlockWithDebounce = debounce(highlightBlock, 100);
+
 
   const { isLoading, error, data } = useQuery({
     queryKey: ['transcriptData'],
-    queryFn: () => fetchTranscriptData(transcriptId)
+    queryFn: () => transcriptId && fetchTranscriptData(transcriptId)
   })
 
-  const getActiveWordIndex = () => {
-    return data.blocks.findIndex((word: TranscriptBlockType) => {
-      if(audioRef && audioRef.current){
-        return word.start > audioRef.current.currentTime;
-      }
-    });
-  }
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const children = [...containerRef.current?.querySelectorAll('p') ?? []];
+    setParagraphs(children);
+  }, [data]);
 
-  const onTimeUpdate = () => {
-    const activeWordIndex = getActiveWordIndex()
-    if(prevNode.current){
-      prevNode.current.classList.remove('active-word');
-    }
-    if(timeRef && timeRef.current !== null && audioRef.current && audioRef.current.currentTime - timeRef.current >= 2){
-      audioRef.current.currentTime = data.blocks[activeWordIndex-1].start;
-    }
-    if(audioRef.current){
-      timeRef.current = audioRef.current.currentTime;
-    }
-    const wordElement:any = wordsRef && wordsRef.current && wordsRef.current.childNodes[activeWordIndex-1];
-    if(wordElement){
-      wordElement.classList.add('active-word');
-      prevNode.current = wordElement;
-    }
-  };
+  const getBlockIndex = useCallback(()=>{
+    if (!audioRef.current?.currentTime || !data) return 0;
+    return findBlockIndex(data.blocks, audioRef.current?.currentTime);
+  },[data])
 
   const handleTimeUpdate = () => {
-    if(audioRef.current?.currentTime){
-      onTimeUpdate();
+    if (audioRef.current?.currentTime) {
+      const blockIndex = getBlockIndex();
+      if (currentBlock !== blockIndex || blockIndex === 0) {
+        const targetNode = paragraphs[blockIndex];
+        if (!targetNode) return;
+        setCurrentBlock(blockIndex);
+        const oldBlock = containerRef.current?.querySelector(`.${ACTIVE_WORD}`) as HTMLParagraphElement;
+        highlightBlockWithDebounce(targetNode, oldBlock);
+      }
     }
   }
 
-  const handleSelected = (e: any):void => {
-    let id: any = e.target.id.split("-")[1];
-    id = parseInt(id);
-    const nodeObj: any = data.blocks[id];
-    const activeWordIndex = getActiveWordIndex();
-  
-    if (wordsRef.current) {
-      const prevNodes:any= wordsRef.current.childNodes[activeWordIndex];
-      prevNodes.classList.remove("active-word");
+  const handleSelected = (e: MouseEvent<HTMLElement>): void => {
+    if (!containerRef.current || !audioRef.current) return;
+    const clickedIndex = paragraphs.indexOf(e.target as HTMLParagraphElement);
+    const targetNode = paragraphs[clickedIndex];  
+    if (!targetNode) return;
+    const oldBlock = containerRef.current?.querySelector(`.${ACTIVE_WORD}`) as HTMLParagraphElement;
+    highlightBlockWithDebounce(targetNode, oldBlock)
+    if (targetNode.dataset.start) { 
+      audioRef.current.currentTime = parseFloat(targetNode.dataset.start); 
+      audioRef.current.play();
     }
-    if (nodeObj !== current || current === null) {
-      if (activeWordIndex > -1) setCurrent(nodeObj);
-      if(audioRef.current){
-        audioRef.current.currentTime = nodeObj.start;
-        audioRef.current.play();
-      }
-    }
-  };
+  }
 
-  if(isLoading){
-    const overrideProp : CSSProperties= {
-      position: "fixed",
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      display: "block",
-      margin: "0 auto",
-      borderColor: "red"
-    }
-    return <Loader isLoading={isLoading} color="#3498db" overrideProp={overrideProp} />
+  const scrollToNode = useCallback(() => {
+    const node = paragraphs[getBlockIndex()]
+
+    node.scrollIntoView({
+      behavior: 'smooth', 
+      block: 'center', 
+      inline: 'nearest'
+    });
+  }, [getBlockIndex, paragraphs])
+
+  if (isLoading) {
+    
+    return <PageLoader isLoading={isLoading} color="#3498db" overrideProp={overrideProp} />
   }
 
   if (error instanceof Error) return 'An error has occurred: ' + error.message
@@ -88,14 +117,15 @@ export const Transcript = () => {
   return (
     <main className="transcript-root">
       <section className="transcript-text_container">
+        {buffering && <BufferLoader bufferingStyle={bufferingStyle} color="#000000" /> }
         <div className="transcript-title">
           <h2>{data.title}</h2>
         </div>
-        {/* transcript text section */}
-        <TranscriptBlock transcript={data} wordsRef={wordsRef} handleMouseUp={handleSelected} />
+        {/* transcript text section */}        
+        <TranscriptBlock transcript={data} containerRef={containerRef} handleMouseUp={handleSelected} />
       </section>
       <section className="transcript-audio_container">
-        <AudioPlayer audioUrl={data.audioUrl} audioRef={audioRef} callTimeUpdate={handleTimeUpdate} />
+        <AudioPlayer audioUrl={data.audioUrl} audioRef={audioRef} callTimeUpdate={handleTimeUpdate} onSeek={scrollToNode} isBuffering={setBuffering} />
       </section>
     </main>
   );
