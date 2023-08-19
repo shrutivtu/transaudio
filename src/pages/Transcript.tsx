@@ -1,8 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useRef, CSSProperties } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTranscriptData } from "../services/transcriptApi";
-import { TranscriptBlock, AudioPlayer } from "../components";
+import { TranscriptBlock, AudioPlayer, Loader } from "../components";
 import { TranscriptBlockType } from "../types";
 
 export const Transcript = () => {
@@ -71,7 +71,16 @@ export const Transcript = () => {
   };
 
   if(isLoading){
-    return 'Loading...'
+    const overrideProp : CSSProperties= {
+      position: "fixed",
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      display: "block",
+      margin: "0 auto",
+      borderColor: "red"
+    }
+    return <Loader isLoading={isLoading} color="#3498db" overrideProp={overrideProp} />
   }
 
   if (error instanceof Error) return 'An error has occurred: ' + error.message

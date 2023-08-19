@@ -13,8 +13,20 @@ export interface TranscriptType {
     blocks: TranscriptBlockType[];
 }
 
+export interface TranscriptBlockProp {
+    transcript: TranscriptType,
+    wordsRef: RefObject<HTMLSelectElement>,
+    handleMouseUp: (e: any) => void
+}
+
 export interface AudioPlayerProps {
     audioUrl: string;
     audioRef: RefObject<HTMLAudioElement>;
     callTimeUpdate: () => void;
 }
+
+export interface LoaderProps {
+    isLoading: boolean;
+    color: string;
+    overrideProp: object
+};
