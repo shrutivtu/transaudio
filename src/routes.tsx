@@ -5,8 +5,7 @@ import QueryWrapper from './QueryWrapper';
 import { ErrorComp } from './components';
 
 const Error = () => {
-  const error:any = useRouteError();
-  return <ErrorComp text={error.message} />
+  return <ErrorComp text='Page not found' />
 }
 
 const router = createBrowserRouter([

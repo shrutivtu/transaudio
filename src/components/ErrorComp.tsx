@@ -1,14 +1,14 @@
-import { useRouteError } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-export const ErrorPage = () => {
-  const error:any = useRouteError();
-
+export const ErrorComp: React.FC<{ text: string }> = ({ text }) => {
   return (
-    <div id="error-page">
-      <h1>Oops!</h1>
-      <p>Sorry, an unexpected error has occurred.</p>
+    <div className="fallback-page">
+      <h1>Oops, something went wrong!</h1>
+      <p>Sorry, the page you're looking for couldn't be found.</p>
+      <p>{text}</p>
       <p>
-        <i>{error.statusText || error.message}</i>
+        You can go back to the{' '}
+        <Link to="/">homepage</Link> or try again later.
       </p>
     </div>
   );

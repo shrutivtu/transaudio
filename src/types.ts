@@ -14,9 +14,9 @@ export interface TranscriptType {
 }
 
 export interface TranscriptBlockProp {
-    transcript: TranscriptType,
-    containerRef: RefObject<HTMLSelectElement>,
-    handleMouseUp: (e: any) => void
+    transcript: TranscriptType;
+    containerRef: RefObject<HTMLSelectElement>;
+    handleMouseUp: (e: any) => void;
 }
 
 export interface AudioPlayerProps {
