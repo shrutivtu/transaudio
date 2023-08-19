@@ -6,8 +6,8 @@ export const TranscriptBlock = ({
   wordsRef,
   handleMouseUp
 }: {
-  transcript: TranscriptType;
-  wordsRef: RefObject<HTMLSelectElement>
+  transcript: TranscriptType,
+  wordsRef: RefObject<HTMLSelectElement>,
   handleMouseUp: (e: any) => void
 }) => {
   return (
