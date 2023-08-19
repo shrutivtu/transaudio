@@ -108,3 +108,12 @@
 .active-word{
     background-color: $pale-yellow;
 }
+
+.fallback-page{
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-family: $primaryFont;
+}
